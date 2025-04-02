@@ -2,8 +2,6 @@
 
 A responsive web application for learning Japanese through conversational AI. This application provides a user-friendly interface to practice Japanese language skills with an AI assistant that responds in both Japanese and English.
 
-![Language Dude Screenshot](https://via.placeholder.com/800x450)
-
 ## Table of Contents
 
 - [Overview](#overview)
