@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 export default function Chat() {
+  // Core chat state
   const [input, setInput] = useState("");
   const [response, setResponse] = useState("");
   const [displayText, setDisplayText] = useState("");
@@ -19,6 +20,7 @@ export default function Chat() {
   const [isTyping, setIsTyping] = useState(false);
   const [typingIndex, setTypingIndex] = useState(0);
 
+  // Conversation management state
   const [conversations, setConversations] = useState([]);
   const [currentConvId, setCurrentConvId] = useState(null);
   const [convName, setConvName] = useState("");
@@ -28,11 +30,13 @@ export default function Chat() {
 
   const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
 
+  // Load saved conversations on mount
   useEffect(() => {
     const saved = localStorage.getItem("languageDudeConversations");
     if (saved) setConversations(JSON.parse(saved));
   }, []);
 
+  // Save conversations when updated
   useEffect(() => {
     if (conversations.length)
       localStorage.setItem(
@@ -41,6 +45,7 @@ export default function Chat() {
       );
   }, [conversations]);
 
+  // Update messages when conversation changes
   useEffect(() => {
     if (currentConvId) {
       const conv = conversations.find((c) => c.id === currentConvId);
@@ -54,6 +59,7 @@ export default function Chat() {
     }
   }, [currentConvId, conversations]);
 
+  // Set up typing effect when response arrives
   useEffect(() => {
     if (response && !isTyping) {
       setDisplayText("");
@@ -62,6 +68,7 @@ export default function Chat() {
     }
   }, [response]);
 
+  // Handle typing animation and save completed response
   useEffect(() => {
     let timer;
     if (isTyping && typingIndex < response.length) {
@@ -78,6 +85,7 @@ export default function Chat() {
     };
   }, [isTyping, typingIndex, response]);
 
+  // API call to get AI response
   async function getAiResponse(userInput) {
     try {
       const response = await fetch(
@@ -114,6 +122,7 @@ export default function Chat() {
     }
   }
 
+  // Conversation management functions
   const createConversation = () => {
     const id = Date.now().toString();
     const newConv = {
@@ -145,6 +154,7 @@ export default function Chat() {
     const msg = { ...newMsg, timestamp: new Date().toISOString() };
 
     if (!currentConvId) {
+      // Create new conversation if none exists
       const id = Date.now().toString();
       const newConv = {
         id,
@@ -157,6 +167,7 @@ export default function Chat() {
       setCurrentConvId(id);
       setMessages([msg]);
     } else {
+      // Update existing conversation
       const updatedMsgs = [...messages, msg];
       setMessages(updatedMsgs);
       setConversations((prev) =>
@@ -195,6 +206,7 @@ export default function Chat() {
     URL.revokeObjectURL(url);
   };
 
+  // Message submission handler
   const handleSubmit = async () => {
     if (!input.trim()) return;
 
@@ -209,6 +221,7 @@ export default function Chat() {
     setInput("");
   };
 
+  // Format date string
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
     return (
@@ -218,6 +231,7 @@ export default function Chat() {
     );
   };
 
+  // Close conversation list when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
       const convList = document.getElementById("conversation-list");
@@ -236,6 +250,7 @@ export default function Chat() {
 
   return (
     <div className="flex flex-col h-screen bg-gradient-to-br from-pink-600 to-blue-500 text-black overflow-hidden">
+      {/* Header */}
       <nav className="p-2 sm:p-4 shadow-lg bg-opacity-80 relative flex items-center justify-center">
         <div className="absolute left-2 sm:left-4 flex items-center space-x-2 sm:space-x-4">
           <button
@@ -282,10 +297,12 @@ export default function Chat() {
         </div>
       </nav>
 
+      {/* Title */}
       <div className="p-2 sm:p-4 text-center text-xl sm:text-2xl font-semibold text-black truncate">
         ことば先生 {currentConvId && !isNaming && `- ${convName}`}
       </div>
 
+      {/* Conversation naming */}
       {isNaming && (
         <div className="flex justify-center mb-2 sm:mb-4 px-4">
           <input
@@ -304,6 +321,7 @@ export default function Chat() {
         </div>
       )}
 
+      {/* Conversation list */}
       {showConvList && (
         <div
           id="conversation-list"
@@ -350,6 +368,7 @@ export default function Chat() {
         </div>
       )}
 
+      {/* Mobile options menu for small screens */}
       {currentConvId && (
         <div className="sm:hidden flex justify-center space-x-3 mb-2">
           <button
@@ -364,6 +383,7 @@ export default function Chat() {
         </div>
       )}
 
+      {/* Chat history */}
       <div className="flex-grow overflow-y-auto p-3 sm:p-6">
         {messages.length > 0 ? (
           <div className="w-full max-w-2xl mx-auto space-y-3 sm:space-y-4">
@@ -399,6 +419,7 @@ export default function Chat() {
         )}
       </div>
 
+      {/* Input area */}
       <div className="p-3 sm:p-6">
         <div className="w-full max-w-2xl mx-auto">
           {isTyping && (
